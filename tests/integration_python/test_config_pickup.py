@@ -27,11 +27,27 @@ def test_config_pickup_by_build_backends(
     config_path = pixi_dir.joinpath("config.toml")
     config = tomllib.loads(config_path.read_text())
     config["mirrors"] = {
-        "https://broken.url/conda-forge": ["https://prefix.dev/conda-forge"],
+        "https://broken.workspace.url/conda-forge": ["https://prefix.dev/conda-forge"],
+        # "https://broken.package.url/conda-forge": ["https://prefix.dev/conda-forge"],
     }
     config_path.write_text(tomli_w.dumps(config))
 
+    env = {
+        "PIXI_CACHE_DIR": str(tmp_pixi_workspace.joinpath("pixi_cache")),
+    }
+    verify_cli_command(
+        [pixi, "run", "-v", "--manifest-path", manifest_path, "fd --version"],
+        env=env,
+        stdout_contains="10.2.0",
+    )
+
+    manifest_path = tmp_pixi_workspace.joinpath("pixi.toml")
+    manifest = tomllib.loads(manifest_path.read_text())
+    manifest["dependencies"] = {"simple-config-test": {"path": "."}}
+    manifest_path.write_text(tomli_w.dumps(manifest))
+
     verify_cli_command(
         [pixi, "run", "-v", "--manifest-path", manifest_path, "start"],
+        env=env,
         stdout_contains="Build backend works",
     )

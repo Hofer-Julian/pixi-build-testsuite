@@ -1,10 +1,10 @@
 [workspace]
-channels = []
+channels = ["https://broken.workspace.url/conda-forge"]
 platforms = ["win-64", "linux-64", "osx-arm64", "osx-64"]
 preview = ["pixi-build"]
 
 [dependencies]
-simple-config-test = { path = "." }
+fd-find = "10.2.0"
 
 [tasks]
 start = "simple-config-test"
@@ -15,4 +15,4 @@ version = "0.1.0"
 
 [package.build]
 backend = { name = "pixi-build-rattler-build", version = "*" }
-channels = ["https://broken.url/conda-forge"]
+channels = ["https://broken.package.url/conda-forge"]
